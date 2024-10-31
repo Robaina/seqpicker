@@ -1,0 +1,123 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Distribution / packaging
+*.tar.gz
+*.tgz
+*.zip
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+.pytest_reports/
+
+# Test data
+tests/data/*
+!tests/data/.gitkeep
+
+# Documentation
+docs/_build/
+site/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# Environment
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+*.env
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# IDE - PyCharm
+.idea/
+*.iml
+*.iws
+.idea_modules/
+
+# IDE - Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Logs
+logs/
+*.log
+log.txt
+
+# System
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# Project specific
+# Temporary directories that might be created during sequence analysis
+temp*/
+output*/
+results*/
+
+# Conda
+conda-env/
+*.conda
+
+# Poetry
+poetry.lock
+dist/
+
+# Pre-commit
+.pre-commit-config.yaml
+
+# Local development configuration
+local_config.yaml
+local_settings.py
+
+# Profiling
+*.prof
+profile_results/
+
+# Generated files
+*.generated.*

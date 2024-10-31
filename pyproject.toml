@@ -2,11 +2,11 @@
 name = "seqpicker"
 version = "0.1.0"
 description = "A tool for selecting representative protein sequences from large datasets"
-authors = ["Your Name <your.email@example.com>"]
+authors = ["Semidán Robaina Estévez <semidan.robaina@gmail.com>"]
 readme = "README.md"
-packages = [{include = "seqpicker", from = "src"}]  # Updated to use src layout
+packages = [{ include = "seqpicker", from = "src" }]
 license = "MIT"
-repository = "https://github.com/yourusername/seqpicker"
+repository = "https://github.com/Robaina/seqpicker"
 keywords = ["bioinformatics", "protein", "sequence", "clustering", "reduction"]
 classifiers = [
     "Development Status :: 3 - Alpha",
