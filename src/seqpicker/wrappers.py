@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 from typing import Optional, Union
 
-from reducefasta.utils import run_command
+from seqpicker.utils import run_command
 
 
 def run_cdhit(

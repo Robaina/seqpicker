@@ -1,4 +1,4 @@
-"""Utility functions and classes for the reducefasta package."""
+"""Utility functions and classes for the seqpicker package."""
 
 from __future__ import annotations
 
