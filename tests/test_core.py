@@ -36,6 +36,7 @@ def test_reduce_database_redundancy_cdhit_only(sample_fasta: Path, temp_dir: Pat
         cdhit=True,
         maxsize=None,
         cdhit_args="-c 0.9",  # 90% identity threshold
+        mixture_weight=0.5,  # Added mixture_weight parameter
     )
 
     assert result == output_file
@@ -58,7 +59,7 @@ def test_reduce_database_redundancy_repset_only(
         output_fasta=output_file,
         cdhit=False,
         maxsize=5,
-        mixture_weight=0.5,
+        mixture_weight=0.5,  # Ensure mixture_weight is provided
     )
 
     assert result == output_file
@@ -82,7 +83,7 @@ def test_reduce_database_redundancy_combined(
         cdhit=True,
         maxsize=3,
         cdhit_args="-c 0.9",
-        mixture_weight=0.5,
+        mixture_weight=0.5,  # Ensure mixture_weight is provided
     )
 
     assert result == output_file
@@ -94,7 +95,7 @@ def test_reduce_database_redundancy_combined(
     assert seq_count <= 3
 
 
-def test_reduce_database_redundancy_error_handling(temp_dir: Path):
+def test_reduce_database_redundancy_error_handling(sample_fasta: Path, temp_dir: Path):
     """Test error handling in database reduction."""
     # Test with non-existent file
     with pytest.raises(FileNotFoundError):
@@ -107,7 +108,7 @@ def test_reduce_database_redundancy_error_handling(temp_dir: Path):
         reduce_database_redundancy(
             input_fasta=sample_fasta,
             output_fasta=temp_dir / "out.fasta",
-            mixture_weight=2.0,
+            mixture_weight=2.0,  # Test invalid mixture_weight
         )
 
 

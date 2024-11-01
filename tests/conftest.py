@@ -1,8 +1,6 @@
 """Test fixtures for seqpicker."""
 
-import os
 from pathlib import Path
-from typing import Iterator
 
 import pytest
 
@@ -48,7 +46,7 @@ MKSINRTILLSLLSCFVLSQVVFQGQNLGFKQSSPLAFMFNKQPQNVIFSASFTTKTKSP"""
 
 @pytest.fixture
 def sample_identity_matrix(test_data_dir: Path) -> Path:
-    """Create a sample pairwise identity matrix from esl-alipid."""
+    """Create a sample pairwise identity matrix."""
     matrix_content = """# p1              p2              %id     nid   denomid  %match  nmatch  denommatch
 seq1             seq2             100.0   62    62       100.0   62      62
 seq1             seq3             98.4    61    62       98.4    61      62
@@ -67,9 +65,6 @@ seq8             seq9             98.4    61    62       98.4    61      62"""
 
 
 @pytest.fixture
-def temp_dir(tmp_path: Path) -> Iterator[Path]:
+def temp_dir(tmp_path: Path) -> Path:
     """Create a temporary directory for test outputs."""
-    cwd = os.getcwd()
-    os.chdir(tmp_path)
-    yield tmp_path
-    os.chdir(cwd)
+    return tmp_path

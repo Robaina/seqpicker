@@ -6,19 +6,18 @@ import pytest
 import numpy as np
 
 from seqpicker.repset import (
-    parse_identities,
-    similarity_from_db,
-    fraction_identity,
-    create_facility_location_objective,
-    create_redundancy_objective,
+    get_pident,
+    fraciden,
+    summaxacross,
+    sumsumwithin,
     MixtureObjective,
-    select_representatives,
+    accelerated_greedy_selection,
 )
 
 
 def test_parse_identities(sample_identity_matrix: Path):
     """Test parsing of pairwise identity matrix."""
-    db = parse_identities(sample_identity_matrix)
+    db = get_pident(sample_identity_matrix)
 
     # Check basic structure
     assert isinstance(db, dict)
@@ -34,48 +33,48 @@ def test_parse_identities(sample_identity_matrix: Path):
 
 def test_similarity_functions():
     """Test similarity calculation functions."""
-    # Test fraction identity
-    assert fraction_identity(-100, 75.0) == 0.75
-    assert fraction_identity(-100, 100.0) == 1.0
-    assert fraction_identity(-100, 0.0) == 0.0
+    # Test fraciden function
+    assert fraciden(-100, 75.0) == 0.75
+    assert fraciden(-100, 100.0) == 1.0
+    assert fraciden(-100, 0.0) == 0.0
 
 
 def test_facility_location_objective(sample_identity_matrix: Path):
     """Test facility location objective function."""
-    db = parse_identities(sample_identity_matrix)
-    obj = create_facility_location_objective()
+    db = get_pident(sample_identity_matrix)
+    obj = summaxacross
 
     # Test evaluation
-    eval_result = obj.eval_func(db, ["seq1", "seq4"], fraction_identity)
+    eval_result = obj["eval"](db, ["seq1", "seq4"], fraciden)
     assert isinstance(eval_result, float)
     assert eval_result > 0
 
     # Test difference calculation
-    data = obj.base_data_func(db, fraction_identity)
-    diff = obj.diff_func(db, "seq1", fraction_identity, data)
+    data = obj["base_data"](db, fraciden)
+    diff = obj["diff"](db, "seq1", fraciden, data)
     assert isinstance(diff, float)
 
 
 def test_redundancy_objective(sample_identity_matrix: Path):
     """Test redundancy minimization objective function."""
-    db = parse_identities(sample_identity_matrix)
-    obj = create_redundancy_objective()
+    db = get_pident(sample_identity_matrix)
+    obj = sumsumwithin
 
     # Test evaluation
-    eval_result = obj.eval_func(db, ["seq1", "seq2"], fraction_identity)
+    eval_result = obj["eval"](db, ["seq1", "seq2"], fraciden)
     assert isinstance(eval_result, float)
     assert eval_result <= 0  # Should be negative due to penalties
 
     # Test difference calculation
-    data = obj.base_data_func(db, fraction_identity)
-    diff = obj.diff_func(db, "seq1", fraction_identity, data)
+    data = obj["base_data"](db, fraciden)
+    diff = obj["diff"](db, "seq1", fraciden, data)
     assert isinstance(diff, float)
 
 
 def test_mixture_objective(sample_identity_matrix: Path):
     """Test mixture of objectives."""
-    facility_loc = create_facility_location_objective()
-    redundancy = create_redundancy_objective()
+    facility_loc = summaxacross
+    redundancy = sumsumwithin
 
     # Test valid initialization
     obj = MixtureObjective(objectives=[facility_loc, redundancy], weights=[0.7, 0.3])
@@ -85,20 +84,25 @@ def test_mixture_objective(sample_identity_matrix: Path):
         MixtureObjective(objectives=[facility_loc, redundancy], weights=[0.7, 0.7])
 
     # Test evaluation
-    db = parse_identities(sample_identity_matrix)
-    sims = [fraction_identity, fraction_identity]
+    db = get_pident(sample_identity_matrix)
+    sims = [fraciden, fraciden]
     eval_result = obj.eval(db, ["seq1", "seq4"], sims)
     assert isinstance(eval_result, float)
 
 
 def test_select_representatives(sample_identity_matrix: Path):
     """Test representative sequence selection."""
-    db = parse_identities(sample_identity_matrix)
+    db = get_pident(sample_identity_matrix)
 
     # Test with different max_size values
     for max_size in [3, 5]:
-        representatives = select_representatives(
-            db=db, mixture_weight=0.5, max_size=max_size
+        representatives = accelerated_greedy_selection(
+            db=db,
+            objective=MixtureObjective(
+                objectives=[summaxacross, sumsumwithin], weights=[0.5, 0.5]
+            ),
+            sim=[fraciden, fraciden],
+            repset_size=max_size,
         )
 
         assert isinstance(representatives, list)
@@ -108,8 +112,14 @@ def test_select_representatives(sample_identity_matrix: Path):
 
     # Test with different mixture weights
     for weight in [0.0, 0.5, 1.0]:
-        representatives = select_representatives(
-            db=db, mixture_weight=weight, max_size=3
+        obj = MixtureObjective(
+            objectives=[summaxacross, sumsumwithin], weights=[weight, 1.0 - weight]
+        )
+        representatives = accelerated_greedy_selection(
+            db=db,
+            objective=obj,
+            sim=[fraciden, fraciden],
+            repset_size=3,
         )
         assert isinstance(representatives, list)
         assert len(representatives) <= 3
@@ -117,16 +127,30 @@ def test_select_representatives(sample_identity_matrix: Path):
 
 def test_select_representatives_error_handling(sample_identity_matrix: Path):
     """Test error handling in representative selection."""
-    db = parse_identities(sample_identity_matrix)
+    db = get_pident(sample_identity_matrix)
 
     # Test invalid mixture weight
     with pytest.raises(ValueError):
-        select_representatives(db=db, mixture_weight=1.5)
+        MixtureObjective(objectives=[summaxacross, sumsumwithin], weights=[1.5, -0.5])
 
     # Test invalid max_size
-    with pytest.raises(ValueError):
-        select_representatives(db=db, max_size=0)
+    with pytest.raises(AssertionError):
+        accelerated_greedy_selection(
+            db=db,
+            objective=MixtureObjective(
+                objectives=[summaxacross, sumsumwithin], weights=[0.5, 0.5]
+            ),
+            sim=[fraciden, fraciden],
+            repset_size=0,
+        )
 
     # Test empty database
     with pytest.raises(ValueError):
-        select_representatives({})
+        accelerated_greedy_selection(
+            db={},
+            objective=MixtureObjective(
+                objectives=[summaxacross, sumsumwithin], weights=[0.5, 0.5]
+            ),
+            sim=[fraciden, fraciden],
+            repset_size=3,
+        )
