@@ -12,13 +12,9 @@ logger = logging.getLogger(__name__)
 
 
 def setup_logging(verbose: bool = False) -> None:
-    """Setup logging configuration."""
-    level = logging.DEBUG if verbose else logging.INFO
-    logging.basicConfig(
-        level=level,
-        format="%(asctime)s | %(levelname)s: %(message)s",
-        handlers=[logging.StreamHandler(sys.stdout)],
-    )
+    """Adjust logging level for verbose mode."""
+    if verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
 
 
 def parse_args(args: Optional[list[str]] = None) -> argparse.Namespace:

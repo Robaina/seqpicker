@@ -123,3 +123,6 @@ profile_results/
 *.generated.*
 
 dev.ipynb
+tests/testdata/*
+src/seqpicker/repset_min.py
+temp_*
