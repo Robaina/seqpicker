@@ -1,54 +1,46 @@
-# seqpicker
+# 🔍 seqpicker
 
-A Python tool for selecting representative protein sequences from large datasets. It combines CD-HIT clustering with an advanced representative set selection algorithm to maintain sequence diversity while reducing redundancy.
+A Python tool for selecting representative protein sequences from large datasets. It combines CD-HIT clustering with an advanced representative set selection algorithm: [Repset](https://onlinelibrary.wiley.com/doi/10.1002/prot.25461) to maintain sequence diversity while reducing redundancy.
 
-## Features
+## ✨ Features
 
 - Reduce protein sequence redundancy using CD-HIT
-- Select representative sequences using facility location optimization
+- Select representative sequences using submodular optimization
 - Maintain sequence diversity while minimizing dataset size
 - Easy-to-use command line interface
 - Flexible Python API for integration into bioinformatics pipelines
 
-## Installation
+## ⚙️ Installation
 
 ```bash
-# Install using pip
-pip install seqpicker
-
-# Or install using Poetry
-poetry add seqpicker
+conda create -f environment.yml
+conda activate seqpicker
+(seqpicker) poetry build
+(seqpicker) pip install dist/seqpicker-0.1.0-py3-none-any.whl
 ```
 
-### Prerequisites
+## 🚀 Usage
 
-The following external tools must be installed and available in your PATH:
-- CD-HIT
-- MAFFT
-- esl-alipid (from HMMER package)
-
-## Usage
-
-### Command Line
+### 💻 Command Line
 
 ```bash
 # Basic usage
-seqpick reduce input.fasta -o output.fasta --maxsize 1000
+seqpick input.fasta -o output.fasta --maxsize 1000
 
 # Use only CD-HIT (faster but less sophisticated)
-seqpick reduce input.fasta --cdhit-only --similarity 0.9
+seqpick input.fasta --cdhit-only --similarity 0.9
 
 # Use only RepSet selection (slower but more accurate)
-seqpick reduce input.fasta --repset-only --maxsize 500
+seqpick input.fasta --repset-only --maxsize 500
 
 # Fine-tune the selection process
-seqpick reduce input.fasta \
+seqpick input.fasta \
     --maxsize 1000 \
     --mixture-weight 0.7 \
     --cdhit-args "-c 0.9 -n 5"
 ```
 
-### Python API
+### 🐍 Python API
 
 ```python
 from seqpicker import reduce_database_redundancy
@@ -71,7 +63,7 @@ reduce_database_redundancy(
 )
 ```
 
-## How It Works
+## 🧠 How It Works
 
 seqpicker uses a two-step approach to select representative sequences:
 
@@ -80,29 +72,37 @@ seqpicker uses a two-step approach to select representative sequences:
    - Configurable similarity threshold and parameters
 
 2. **Representative Selection**
-   - Implements a facility location optimization algorithm
+   - Implements RepSet, a submodular optimization algorithm to select representative sequences
    - Balances sequence diversity and coverage
    - Uses sequence similarity and redundancy metrics
    - Configurable mixture weight between objectives
 
-## Contributing
+## 📦 Dependencies
+
+- [CD-HIT](http://weizhongli-lab.org/cd-hit/)
+- [RepSet](https://onlinelibrary.wiley.com/doi/10.1002/prot.25461)
+- [Mafft](https://mafft.cbrc.jp/alignment/software/)
+- [HMMER (esl-alipid)](http://hmmer.org/)
+
+
+## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
-## License
+## 📜 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-## Citation
+## ✏️ Citation
 
 If you use seqpicker in your research, please cite:
 
 ```bibtex
 @software{seqpicker2024,
-  author = {Your Name},
+  author = {Semidán Robaina Estévez},
   title = {seqpicker: A tool for selecting representative protein sequences},
   year = {2024},
   publisher = {GitHub},
-  url = {https://github.com/yourusername/seqpicker}
+  url = {https://github.com/Robaina/seqpicker}
 }
 ```
